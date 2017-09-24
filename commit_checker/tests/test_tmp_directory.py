@@ -14,6 +14,8 @@ class TestTmpDirectory(unittest.TestCase):
         TmpDirectory.clean_tmp_dirs()
         self.assertFalse(os.path.isdir(tmp_dir_path))
 
+        # todo test signal handlers
+
 
 if __name__ == '__main__':
     unittest.main()
