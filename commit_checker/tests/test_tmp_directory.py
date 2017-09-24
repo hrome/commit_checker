@@ -9,6 +9,11 @@ class TestTmpDirectory(unittest.TestCase):
         tmp_dir_path = TmpDirectory.create_tmp_dir()
         self.assertTrue(os.path.isdir(tmp_dir_path))
 
+    def test_remove_dirs(self):
+        tmp_dir_path = TmpDirectory.create_tmp_dir()
+        TmpDirectory.clean_tmp_dirs()
+        self.assertFalse(os.path.isdir(tmp_dir_path))
+
 
 if __name__ == '__main__':
     unittest.main()
