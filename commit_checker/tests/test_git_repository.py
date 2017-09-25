@@ -9,15 +9,17 @@ from commit_checker.lib.git_repository import GitRepository
 class TestGitRepository(unittest.TestCase):
     def setUp(self):
         self.__repo_dir = TmpDirectory.create_tmp_dir()
+        self.__test_file_name = 'test123'
+        self.__test_file_content = 'test_content'
         command_list = [
             'git init',
             'git commit --allow-empty -m "Initial commit"',
             'echo 123 > 123',
-            'echo test > test',
-            'git add 123 test',
+            'echo %s > %s' % (self.__test_file_content, self.__test_file_name),
+            'git add 123 %s' % self.__test_file_name,
             'git commit -m "123 and test"',
-            'echo test >> test',
-            'git add test',
+            'echo 333 >> 123',
+            'git add 123',
             'git commit -m "only test"',
         ]
 
@@ -38,4 +40,27 @@ class TestGitRepository(unittest.TestCase):
         command = 'git rev-parse HEAD~2'
         old_rev = subprocess.check_output(['bash', '-c', command], cwd=self.__repo_dir).split("\n")[0]
         changed_files = repo.get_changed_file_names(old_rev, new_rev)
-        self.assertItemsEqual(changed_files, ['123', 'test'])
+        self.assertItemsEqual(changed_files, ['123', self.__test_file_name])
+
+    def test_getting_object_hash_by_commit_and_path(self):
+        repo = GitRepository(self.__repo_dir)
+        command = 'git rev-parse HEAD~1'
+        rev = subprocess.check_output(['bash', '-c', command], cwd=self.__repo_dir).split("\n")[0]
+
+        command = 'echo %s | git hash-object --stdin' % self.__test_file_content
+        file_hash = subprocess.check_output(['bash', '-c', command], cwd=self.__repo_dir).split("\n")[0]
+
+        file_hash_by_repo = repo.get_object_hash_by_commit_and_path(rev, self.__test_file_name)
+        self.assertEqual(file_hash, file_hash_by_repo)
+
+    def test_creating_file_by_object_hash(self):
+        repo = GitRepository(self.__repo_dir)
+        command = 'echo %s | git hash-object --stdin' % self.__test_file_content
+        file_hash = subprocess.check_output(['bash', '-c', command], cwd=self.__repo_dir).split("\n")[0]
+
+        repo.create_file_by_object_hash(file_hash, self.__test_file_name)
+
+        command = 'git hash-object %s' % self.__test_file_name
+        file_hash_by_repo = subprocess.check_output(['bash', '-c', command], cwd=self.__repo_dir).split("\n")[0]
+
+        self.assertEqual(file_hash, file_hash_by_repo)
