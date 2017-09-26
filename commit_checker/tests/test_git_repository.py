@@ -64,3 +64,14 @@ class TestGitRepository(unittest.TestCase):
         file_hash_by_repo = subprocess.check_output(['bash', '-c', command], cwd=self.__repo_dir).split("\n")[0]
 
         self.assertEqual(file_hash, file_hash_by_repo)
+
+    def test_getting_commit_list(self):
+        repo = GitRepository(self.__repo_dir)
+
+        head = subprocess.check_output(['bash', '-c', 'git rev-parse HEAD'], cwd=self.__repo_dir).split("\n")[0]
+        head_1 = subprocess.check_output(['bash', '-c', 'git rev-parse HEAD~1'], cwd=self.__repo_dir).split("\n")[0]
+        head_2 = subprocess.check_output(['bash', '-c', 'git rev-parse HEAD~2'], cwd=self.__repo_dir).split("\n")[0]
+
+        commit_list = repo.get_commit_list(head_2, head)
+
+        self.assertItemsEqual(commit_list, [head_1, head])

@@ -31,3 +31,8 @@ class GitRepository:
             object_hash, self.__repo_dir, file_path)
         if subprocess.check_call(['bash', '-c', bash_command], cwd=self.__repo_dir) != 0:
             raise RuntimeError('error while checking files')
+
+    def get_commit_list(self, old_rev, new_rev):
+        bash_command = "git log {}..{} --format=%H --reverse".format(old_rev, new_rev)
+
+        return subprocess.check_output(['bash', '-c', bash_command], cwd=self.__repo_dir).split("\n")[:-1]
