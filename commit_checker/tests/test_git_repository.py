@@ -58,10 +58,11 @@ class TestGitRepository(unittest.TestCase):
         command = 'echo %s | git hash-object --stdin' % self.__test_file_content
         file_hash = subprocess.check_output(['bash', '-c', command], cwd=self.__repo_dir).split("\n")[0]
 
-        repo.create_file_by_object_hash(file_hash, self.__test_file_name)
+        destination_dir = TmpDirectory.create_tmp_dir()
+        repo.create_file_by_object_hash(file_hash, self.__test_file_name, destination_dir)
 
         command = 'git hash-object %s' % self.__test_file_name
-        file_hash_by_repo = subprocess.check_output(['bash', '-c', command], cwd=self.__repo_dir).split("\n")[0]
+        file_hash_by_repo = subprocess.check_output(['bash', '-c', command], cwd=destination_dir).split("\n")[0]
 
         self.assertEqual(file_hash, file_hash_by_repo)
 
