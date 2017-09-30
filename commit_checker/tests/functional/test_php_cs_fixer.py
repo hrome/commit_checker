@@ -18,7 +18,7 @@ class FunctionalTestPhpCsFixer(unittest.TestCase):
         old_rev = subprocess.check_output(['bash', '-c', command], cwd=self.__test_repo_dir).split("\n")[0]
 
         script_path = os.path.abspath(os.path.dirname(__file__) + '/../../')
-        command = 'echo %s %s %s | python %s' % (old_rev, new_rev, 'refs/heads/master', script_path)
+        command = 'echo %s %s %s | python %s  --php-cs-fixer' % (old_rev, new_rev, 'refs/heads/master', script_path)
 
         dev_null = open(os.devnull, 'w')
         exit_code = subprocess.call(['bash', '-c', command], cwd=self.__test_repo_dir, stdout=dev_null, stderr=dev_null)
@@ -29,6 +29,20 @@ class FunctionalTestPhpCsFixer(unittest.TestCase):
         command = 'git rev-parse HEAD~1'
         new_rev = subprocess.check_output(['bash', '-c', command], cwd=self.__test_repo_dir).split("\n")[0]
         command = 'git rev-parse HEAD~2'
+        old_rev = subprocess.check_output(['bash', '-c', command], cwd=self.__test_repo_dir).split("\n")[0]
+
+        script_path = os.path.abspath(os.path.dirname(__file__) + '/../../')
+        command = 'echo %s %s %s | python %s --php-cs-fixer' % (old_rev, new_rev, 'refs/heads/master', script_path)
+
+        dev_null = open(os.devnull, 'w')
+        exit_code = subprocess.call(['bash', '-c', command], cwd=self.__test_repo_dir, stdout=dev_null, stderr=dev_null)
+
+        self.assertEqual(exit_code, 0)
+
+    def test_disabled_check(self):
+        command = 'git rev-parse HEAD'
+        new_rev = subprocess.check_output(['bash', '-c', command], cwd=self.__test_repo_dir).split("\n")[0]
+        command = 'git rev-parse HEAD~1'
         old_rev = subprocess.check_output(['bash', '-c', command], cwd=self.__test_repo_dir).split("\n")[0]
 
         script_path = os.path.abspath(os.path.dirname(__file__) + '/../../')
