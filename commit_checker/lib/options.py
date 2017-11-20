@@ -22,6 +22,12 @@ class Options:
                                  default='/usr/local/bin/php-cs-fixer-v2',
                                  help='php-cs-fixer config file (Default: /usr/local/bin/php-cs-fixer-v2)')
 
+        self.parser.add_argument('--binary-check',
+                                 dest='binary_check_enabled',
+                                 action='store_true',
+                                 default=False,
+                                 help='Enable binary check')
+
     def parse(self, args):
         known, unknown = self.parser.parse_known_args(args)
 
