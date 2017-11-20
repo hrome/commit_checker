@@ -1,6 +1,6 @@
 import os
-import subprocess
 import shutil
+import subprocess
 
 
 class GitRepo:
@@ -28,3 +28,7 @@ class GitRepo:
         for command in command_list:
             subprocess.check_call(['bash', '-c', command], cwd=self.__repo_dir, stdout=dev_null,
                                   stderr=subprocess.STDOUT)
+
+    def parse_rev(self, rev):
+        command = 'git rev-parse %s' % rev
+        return subprocess.check_output(['bash', '-c', command], cwd=self.__repo_dir).split("\n")[0]

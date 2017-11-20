@@ -1,6 +1,6 @@
 import os
-import subprocess
 import unittest
+from subprocess import Popen, PIPE
 
 from commit_checker.lib import TmpDirectory
 from commit_checker.tests.support import GitRepo
@@ -10,45 +10,37 @@ class FunctionalTestPhpCsFixer(unittest.TestCase):
     def setUp(self):
         self.__test_repo_dir = TmpDirectory.create_tmp_dir()
         self.__repo = GitRepo(self.__test_repo_dir)
+        self.__script_path = os.path.abspath(os.path.dirname(__file__) + '/../../')
 
     def test_rejected_push(self):
-        command = 'git rev-parse HEAD'
-        new_rev = subprocess.check_output(['bash', '-c', command], cwd=self.__test_repo_dir).split("\n")[0]
-        command = 'git rev-parse HEAD~1'
-        old_rev = subprocess.check_output(['bash', '-c', command], cwd=self.__test_repo_dir).split("\n")[0]
+        new_rev = self.__repo.parse_rev('HEAD')
+        old_rev = self.__repo.parse_rev('HEAD~1')
 
-        script_path = os.path.abspath(os.path.dirname(__file__) + '/../../')
-        command = 'echo %s %s %s | python %s  --php-cs-fixer' % (old_rev, new_rev, 'refs/heads/master', script_path)
+        command = 'python %s --php-cs-fixer' % self.__script_path
 
-        dev_null = open(os.devnull, 'w')
-        exit_code = subprocess.call(['bash', '-c', command], cwd=self.__test_repo_dir, stdout=dev_null, stderr=dev_null)
+        p = Popen(['bash', '-c', command], cwd=self.__test_repo_dir, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        output, err = p.communicate("%s %s %s" % (old_rev, new_rev, 'refs/heads/master'))
 
-        self.assertEqual(exit_code, 108)
+        self.assertEqual(p.returncode, 108, err)
 
     def test_pass_push(self):
-        command = 'git rev-parse HEAD~1'
-        new_rev = subprocess.check_output(['bash', '-c', command], cwd=self.__test_repo_dir).split("\n")[0]
-        command = 'git rev-parse HEAD~2'
-        old_rev = subprocess.check_output(['bash', '-c', command], cwd=self.__test_repo_dir).split("\n")[0]
+        new_rev = self.__repo.parse_rev('HEAD~1')
+        old_rev = self.__repo.parse_rev('HEAD~2')
 
-        script_path = os.path.abspath(os.path.dirname(__file__) + '/../../')
-        command = 'echo %s %s %s | python %s --php-cs-fixer' % (old_rev, new_rev, 'refs/heads/master', script_path)
+        command = 'python %s --php-cs-fixer' % self.__script_path
 
-        dev_null = open(os.devnull, 'w')
-        exit_code = subprocess.call(['bash', '-c', command], cwd=self.__test_repo_dir, stdout=dev_null, stderr=dev_null)
+        p = Popen(['bash', '-c', command], cwd=self.__test_repo_dir, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        output, err = p.communicate("%s %s %s" % (old_rev, new_rev, 'refs/heads/master'))
 
-        self.assertEqual(exit_code, 0)
+        self.assertEqual(p.returncode, 0, err)
 
     def test_disabled_check(self):
-        command = 'git rev-parse HEAD'
-        new_rev = subprocess.check_output(['bash', '-c', command], cwd=self.__test_repo_dir).split("\n")[0]
-        command = 'git rev-parse HEAD~1'
-        old_rev = subprocess.check_output(['bash', '-c', command], cwd=self.__test_repo_dir).split("\n")[0]
+        new_rev = self.__repo.parse_rev('HEAD')
+        old_rev = self.__repo.parse_rev('HEAD~1')
 
-        script_path = os.path.abspath(os.path.dirname(__file__) + '/../../')
-        command = 'echo %s %s %s | python %s' % (old_rev, new_rev, 'refs/heads/master', script_path)
+        command = 'python %s' % self.__script_path
 
-        dev_null = open(os.devnull, 'w')
-        exit_code = subprocess.call(['bash', '-c', command], cwd=self.__test_repo_dir, stdout=dev_null, stderr=dev_null)
+        p = Popen(['bash', '-c', command], cwd=self.__test_repo_dir, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        output, err = p.communicate("%s %s %s" % (old_rev, new_rev, 'refs/heads/master'))
 
-        self.assertEqual(exit_code, 0)
+        self.assertEqual(p.returncode, 0, err)
