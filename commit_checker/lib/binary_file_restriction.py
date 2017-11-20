@@ -8,21 +8,21 @@ from tmp_directory import TmpDirectory
 
 class BinaryFileRestriction(CheckerInterface):
     def __init__(self):
-        self.file_for_binary_check_name = 'file_for_binary_check'
-        self.error_exit_code = 102
+        self.__file_for_binary_check_name = 'file_for_binary_check'
+        self.__error_exit_code = 102
 
     def check(self, file_path, object_hash):
         tmp_dir = TmpDirectory.create_tmp_dir()
 
         bash_command = "git cat-file blob {} > {}/{}".format(
-            object_hash, tmp_dir, self.file_for_binary_check_name)
+            object_hash, tmp_dir, self.__file_for_binary_check_name)
         if subprocess.check_call(['bash', '-c', bash_command]) != 0:
             print "error while checking files out"
             exit(1)
 
-        if self.is_file_binary(os.path.join(tmp_dir, self.file_for_binary_check_name)):
+        if self.is_file_binary(os.path.join(tmp_dir, self.__file_for_binary_check_name)):
             self.print_error(file_path, object_hash)
-            exit(self.error_exit_code)
+            exit(self.__error_exit_code)
 
     @staticmethod
     def is_file_binary(file_path):

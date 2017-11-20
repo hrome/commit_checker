@@ -28,6 +28,17 @@ class Options:
                                  default=False,
                                  help='Enable binary check')
 
+        self.parser.add_argument('--file-size-check',
+                                 dest='file_size_check_enabled',
+                                 action='store_true',
+                                 default=False,
+                                 help='Enable file size check')
+
+        self.parser.add_argument('--max-file-size-in-bytes',
+                                 dest='max_file_size_in_bytes',
+                                 default="1048576",  # 1Mb
+                                 help='Enable file size check')
+
     def parse(self, args):
         known, unknown = self.parser.parse_known_args(args)
 

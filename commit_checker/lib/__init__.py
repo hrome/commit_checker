@@ -5,3 +5,4 @@ from options import Options
 from each_commit_checker import EachCommitChecker
 from checker_interface import CheckerInterface
 from binary_file_restriction import BinaryFileRestriction
+from file_size_restriction import FileSizeRestriction

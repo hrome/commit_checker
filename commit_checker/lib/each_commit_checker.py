@@ -2,6 +2,7 @@ import subprocess
 
 from binary_file_restriction import BinaryFileRestriction
 from checker_interface import CheckerInterface
+from file_size_restriction import FileSizeRestriction
 from git_repository import GitRepository
 
 
@@ -16,7 +17,9 @@ class EachCommitChecker:
     def init_checkers(self):
         if self.__config.binary_check_enabled:
             self.__checkers.append(BinaryFileRestriction())
-        pass
+
+        if self.__config.file_size_check_enabled:
+            self.__checkers.append(FileSizeRestriction(self.__config.max_file_size_in_bytes))
 
     def check(self, old_rev, new_rev):
         if not len(self.__checkers):
