@@ -2,3 +2,6 @@ from tmp_directory import TmpDirectory
 from git_repository import GitRepository
 from php_cs_fixer import PhpCsFixer
 from options import Options
+from each_commit_checker import EachCommitChecker
+from checker_interface import CheckerInterface
+from binary_file_restriction import BinaryFileRestriction

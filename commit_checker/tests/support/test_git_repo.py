@@ -18,6 +18,8 @@ class GitRepo:
             'git init',
             'git add .php_cs',
             'git commit -m "Initial commit"',
+            'git add binary.dat',
+            'git commit -m "Add binary file"',
             'git add src/pass.php',
             'git commit -m "Add file"',
             'git add src/reject.php',

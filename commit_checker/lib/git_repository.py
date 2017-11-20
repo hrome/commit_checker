@@ -7,6 +7,10 @@ class GitRepository:
         assert os.path.isdir(repo_dir)
         self.__repo_dir = repo_dir
 
+    @staticmethod
+    def is_revision_empty(rev):
+        return rev == "0000000000000000000000000000000000000000"
+
     def get_default_branch_name(self):
         command = 'git rev-parse --abbrev-ref HEAD'
         return subprocess.check_output(['bash', '-c', command], cwd=self.__repo_dir).split("\n")[0]
