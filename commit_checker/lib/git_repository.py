@@ -16,7 +16,7 @@ class GitRepository:
         return subprocess.check_output(['bash', '-c', command], cwd=self.__repo_dir).split("\n")[0]
 
     def get_changed_file_names(self, old_rev, new_rev):
-        bash_command = "git diff --name-only {} {}".format(old_rev, new_rev)
+        bash_command = "git diff --name-only --diff-filter=ACMRT {} {}".format(old_rev, new_rev)
 
         return subprocess.check_output(['bash', '-c', bash_command], cwd=self.__repo_dir).split("\n")[:-1]
 
