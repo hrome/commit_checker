@@ -18,7 +18,8 @@ def main(args):
         old_rev = repo.get_default_branch_name()
 
     if repo.is_revision_empty(new_rev):
-        raise RuntimeError("New revision can not be empty")
+        # case of branch deletion
+        exit(0)
 
     if config.php_cs_fixer_enabled:
         fixer = PhpCsFixer(repo, config.php_cs_fixer_executable, config.php_cs_fixer_config_path)

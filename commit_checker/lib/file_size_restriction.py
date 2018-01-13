@@ -13,7 +13,6 @@ class FileSizeRestriction(CheckerInterface):
         bash_command = "git cat-file -s {}".format(object_hash)
         object_size = subprocess.check_output(['bash', '-c', bash_command]).split("\n")[0]
         object_size = int(object_size)
-        print object_size
 
         if object_size > self.__max_file_size_in_bytes:
             self.print_error(file_path, object_hash)
