@@ -7,11 +7,12 @@ from tmp_directory import TmpDirectory
 
 
 class PhpCsFixer:
-    def __init__(self, repo, php_cs_fixer_executable, path_to_config_file=".php_cs"):
+    def __init__(self, repo, php_cs_fixer_executable, path_to_config_file, dirs_to_create):
         assert isinstance(repo, GitRepository)
         self.__repo = repo
         self.__path_to_php_cs_fixer_executable = php_cs_fixer_executable
         self.__path_to_config_file = path_to_config_file
+        self.__dirs_to_create = dirs_to_create
 
     def check_push(self, old_rev, new_rev):
         directory_for_check = TmpDirectory.create_tmp_dir()
@@ -24,10 +25,7 @@ class PhpCsFixer:
             file_hash = self.__repo.get_object_hash_by_commit_and_path(new_rev, file_path)
             self.__repo.create_file_by_object_hash(file_hash, file_path, directory_for_check)
 
-        # todo: get dirs to create automatically
-        dirs_to_create = ['app', 'scr', 'tests']
-
-        for dir_path in dirs_to_create:
+        for dir_path in self.__dirs_to_create:
             full_directory_path = os.path.join(directory_for_check, dir_path)
             if not os.path.isdir(full_directory_path):
                 os.makedirs(full_directory_path)

@@ -17,6 +17,11 @@ class Options:
                                  default='.php_cs',
                                  help='php-cs-fixer config file (Default: .php_cs)')
 
+        self.parser.add_argument('--php-cs-fixer-dirs-to-create',
+                                 dest='php_cs_fixer_dirs_to_create',
+                                 default='app:src:tests',
+                                 help='Colon separated list of relative paths of dirs to create for finder')
+
         self.parser.add_argument('--php-cs-fixer-executable',
                                  dest='php_cs_fixer_executable',
                                  default='/usr/local/bin/php-cs-fixer-v2',
@@ -41,5 +46,7 @@ class Options:
 
     def parse(self, args):
         known, unknown = self.parser.parse_known_args(args)
+
+        known.php_cs_fixer_dirs_to_create = known.php_cs_fixer_dirs_to_create.split(':')
 
         return known

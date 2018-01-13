@@ -22,7 +22,12 @@ def main(args):
         exit(0)
 
     if config.php_cs_fixer_enabled:
-        fixer = PhpCsFixer(repo, config.php_cs_fixer_executable, config.php_cs_fixer_config_path)
+        fixer = PhpCsFixer(
+            repo,
+            config.php_cs_fixer_executable,
+            config.php_cs_fixer_config_path,
+            config.php_cs_fixer_dirs_to_create
+        )
         fixer.check_push(old_rev, new_rev)
 
     each_commit_checker = EachCommitChecker(config, repo)
