@@ -1,6 +1,6 @@
 import os
-import subprocess
 import sys
+from subprocess import Popen, PIPE
 
 from git_repository import GitRepository
 from tmp_directory import TmpDirectory
@@ -37,10 +37,16 @@ class PhpCsFixer:
             self.__path_to_config_file
         )
 
-        dev_null = open(os.devnull, 'w')
-        return_code = subprocess.call(['bash', '-c', php_cs_fixer_command], cwd=directory_for_check, stderr=dev_null)
-        if return_code != 0:
-            return_code += 100
-            sys.stderr.write("return code: %s" % return_code)
+        p = Popen(['bash', '-c', php_cs_fixer_command], cwd=directory_for_check, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        output, err = p.communicate()
 
-            exit(return_code)
+        return_code = p.returncode
+
+        if return_code != 0:
+            program_return_code = 100 + return_code
+            sys.stderr.write(err)
+            sys.stderr.write(output)
+            sys.stderr.write("exit code: %s\n" % return_code)
+            sys.stderr.write("see https://github.com/FriendsOfPHP/PHP-CS-Fixer#exit-codes\n")
+
+            exit(program_return_code)
