@@ -30,14 +30,13 @@ class EachCommitChecker:
         previous_commit_hash = old_rev
 
         for commit_hash in commit_list:
-            bash_command = "git diff --name-only {} {}".format(previous_commit_hash, commit_hash)
+            bash_command = "git diff --name-only --diff-filter=ACMRT {} {}".format(previous_commit_hash, commit_hash)
             files = subprocess.check_output(['bash', '-c', bash_command]).split("\n")[:-1]
 
             for file_path in files:
                 bash_command = "git ls-tree --full-name -r {} | egrep \"(\s){}\$\" | awk '{{ print $3 }}'".format(
                     commit_hash, file_path)
                 object_hash = subprocess.check_output(['bash', '-c', bash_command]).split("\n")[0]
-
                 assert object_hash
 
                 for checker in self.__checkers:
